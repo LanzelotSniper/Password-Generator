@@ -1,9 +1,5 @@
 from time import time
 import random as zufall
-import os
-
-#Speicherpfad Festlegung
-standardpfad = os.path.join("C","Users","Arda","AppData")
 
 #Zufallszahlen Generation
 zufall.seed()
