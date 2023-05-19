@@ -1,5 +1,11 @@
 from time import time
 import random as zufall
+import tkinter as tk
+import threading
+import os
+
+# Initialisierung
+fragen_anzeigen = True
 
 # Zufallszahlen Generation
 zufall.seed()
@@ -14,6 +20,35 @@ buchstaben = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', '
 
 # Max.Index 10
 sonderzeichen = ['!', '#', '$', '%', '&', '*', '+', ',', '-', '.', '/']
+
+eingabefeld_1 = None
+eingabefeld_2 = None
+start = None
+
+def ergaenze_passwörter(sicherheitsstufe, limit, ziffernlimit=0, sonderzeichenlimit=0, anzahl=1):
+    if not os.path.isfile("Passwörter.txt"):
+        with open("Passwörter.txt", "w") as datei:
+            pass
+
+    with open("Passwörter.txt", "r") as datei:
+        vorhandene_passwoerter = datei.readlines()
+        bereits_erstellt = len(vorhandene_passwoerter)
+        differenz = anzahl - bereits_erstellt
+
+    if differenz > 0:
+        passwort_count = 0
+        while passwort_count < differenz:
+            if sicherheitsstufe == '1':
+                passwort = passwort_niedrig(limit)
+            elif sicherheitsstufe == '2':
+                passwort = passwort_mittel(limit, ziffernlimit)
+            elif sicherheitsstufe == '3':
+                passwort = passwort_hoch(limit, ziffernlimit, sonderzeichenlimit)
+            print(passwort)
+            passwort_speicherung(passwort)
+            passwort_count += 1
+    else:
+        print("Es wurden bereits genügend Passwörter erstellt.")
 
 def passwort_niedrig(limit):
     werteliste.clear()
@@ -46,7 +81,7 @@ def passwort_hoch(limit, ziffernlimit, sonderzeichenlimit):
     for _ in range(ziffernlimit):
         werteliste.append(str(zufall.randint(0, 9)))
     for _ in range(sonderzeichenlimit):
-        zufallsindex = zufall.randint(0, 10)
+        zufallsindex = zufall.randint(0, 7)
         zufallswert = sonderzeichen[zufallsindex]
         werteliste.append(zufallswert)
     zufall.shuffle(werteliste)
@@ -57,58 +92,73 @@ def passwort_speicherung(passwort):
     with open("Passwörter.txt", "a") as datei:
         datei.write(passwort + "\n")
 
+def passwort_generieren(sicherheitsstufe, limit, ziffernlimit=0, sonderzeichenlimit=0, anzahl=1):
+    passwort_count = 0
+    while passwort_count < anzahl:
+        if sicherheitsstufe == '1':
+            passwort = passwort_niedrig(limit)
+        elif sicherheitsstufe == '2':
+            passwort = passwort_mittel(limit, ziffernlimit)
+        elif sicherheitsstufe == '3':
+            passwort = passwort_hoch(limit, ziffernlimit, sonderzeichenlimit)
+        print(passwort)
+        passwort_speicherung(passwort)
+        passwort_count += 1
+
 def sicherheitslevel():
-    while True:
-        länge = int(input("Wählen Sie Ihre Sicherheitsstufe. 1=Niedrig 2=Mittel 3=Hoch: "))
-        if länge in [1, 2, 3]:
-            return länge
+    sicherheitsstufe = eingabefeld_1.get()
+    if sicherheitsstufe in ['1', '2', '3']:
+        if sicherheitsstufe == '1':
+            limit = 6
+            print("Sie haben die niedrige Sicherheitsstufe gewählt.")
+        elif sicherheitsstufe == '2':
+            limit = 10
+            ziffernlimit = zufall.randint(2, 6)
+            print("Sie haben die mittlere Sicherheitsstufe gewählt.")
+        elif sicherheitsstufe == '3':
+            limit = 25
+            ziffernlimit = zufall.randint(2, 4)
+            sonderzeichenlimit = zufall.randint(2, 6)
+            print("Sie haben die hohe Sicherheitsstufe gewählt.")
+
+        eingabefeld_1.config(state='disabled')  # Deaktiviere das Eingabefeld nach der Eingabe
+        eingabefeld_2.config(state='disabled')  # Deaktiviere das Eingabefeld nach der Eingabe
+        start.config(state='disabled')  # Deaktiviere den Start-Button nach der Eingabe
+
+        anzahl = int(eingabefeld_2.get())
+        ergaenze_passwörter(sicherheitsstufe, limit, ziffernlimit, sonderzeichenlimit, anzahl)
+    else:
         print("Ungültige Eingabe. Bitte wählen Sie 1, 2 oder 3.")
 
-def passwortanzahl():
-    while True:
-        try:
-            anzahl = int(input("Wie viele Passwörter möchten Sie generieren? "))
-            return anzahl
-        except ValueError:
-            print("Ungültige Eingabe. Bitte geben Sie eine Zahl ein.")
+def fenster():
+    global eingabefeld_1, eingabefeld_2, start
+    # Fenster erstellen
+    fenster = tk.Tk()
+    fenster.title("Password Manager")
 
-def passwort_generator():
-    länge = sicherheitslevel()
-    anzahl = passwortanzahl()
+    # Fenstergröße festlegen
+    bildschirm_breite = fenster.winfo_screenwidth()
+    bildschirm_höhe = fenster.winfo_screenheight()
+    fensterbreite = int(bildschirm_breite * 0.6)
+    fensterhöhe = int(bildschirm_höhe * 0.6)
+    fenster.geometry(f"{fensterbreite}x{fensterhöhe}")
 
-    if länge == 1:
-        limit = 6
-        print("Sie haben die niedrige Sicherheitsstufe gewählt.")
-        for _ in range(anzahl):
-            passwort = passwort_niedrig(limit)
-            print(passwort)
-            passwort_speicherung(passwort)
+    # Komponenten hinzufügen
+    label1 = tk.Label(fenster, text="Sicherheitsstufe (1, 2 oder 3):")
+    label1.pack(pady=10)
+    eingabefeld_1 = tk.Entry(fenster)
+    eingabefeld_1.pack()
 
-    elif länge == 2:
-        limit = 10
-        ziffernlimit = zufall.randint(2, 6)
-        print("Sie haben die mittlere Sicherheitsstufe gewählt.")
-        for _ in range(anzahl):
-            passwort = passwort_mittel(limit, ziffernlimit)
-            print(passwort)
-            passwort_speicherung(passwort)
+    label2 = tk.Label(fenster, text="Anzahl der Passwörter:")
+    label2.pack(pady=10)
+    eingabefeld_2 = tk.Entry(fenster)
+    eingabefeld_2.pack()
+    # Button erstellen
+    start = tk.Button(fenster, text="Passwortgenerator Starten", command=sicherheitslevel)
+    start.pack()
 
-    elif länge == 3:
-        limit = 25
-        ziffernlimit = zufall.randint(2, 4)
-        sonderzeichenlimit = zufall.randint(2, 6)
-        print("Sie haben die hohe Sicherheitsstufe gewählt.")
-        for _ in range(anzahl):
-            passwort = passwort_hoch(limit, ziffernlimit, sonderzeichenlimit)
-            print(passwort)
-            passwort_speicherung(passwort)
-
-    else:
-        #Fehlermeldung
-        print("Ein Fehler ist aufgetreten.")
-
-# Programm erklärung
-print("Dieses Programm erstellt zufällige Passwörter.")
+    # Fensterloop
+    fenster.mainloop()
 
 # Hauptfunktion aufrufen
-passwort_generator()
+fenster()
