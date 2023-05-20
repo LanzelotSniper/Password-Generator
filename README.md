@@ -7,4 +7,4 @@ Sollten sie Visual Studio Code verwenden ist der einfachste Weg hierfür, den "P
 
 Die Datei, welche ihre Passwörter enthält befindet sich IMMER im selben Ordner, in dem sich das Programm befindet. Wenn Sie die Datei schneller Abrufen können wollen erstellen Sie eine Verknüpfung und legen Sie diese auf ihrem Desktop ab.
 
-Ab jetzt wird an einem UI Gearbeitet.
+Es wird an weiteren Funktionen und einer besseren Nutzerfreundlichkeit gearbeitet.
