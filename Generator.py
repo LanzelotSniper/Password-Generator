@@ -111,10 +111,13 @@ def sicherheitslevel():
     if sicherheitsstufe in ['1', '2', '3']:
         if sicherheitsstufe == '1':
             limit = 6
+            ziffernlimit = 0
+            sonderzeichenlimit = 0
             print("Sie haben die niedrige Sicherheitsstufe gewählt.")
         elif sicherheitsstufe == '2':
             limit = 10
             ziffernlimit = zufall.randint(2, 6)
+            sonderzeichenlimit = 0
             print("Sie haben die mittlere Sicherheitsstufe gewählt.")
         elif sicherheitsstufe == '3':
             limit = 25
