@@ -1,6 +1,7 @@
 from time import time
 import random as zufall
 import tkinter as tk
+from tkinter import ttk
 import threading
 import os
 
@@ -143,18 +144,31 @@ def fenster():
     fensterhöhe = int(bildschirm_höhe * 0.6)
     fenster.geometry(f"{fensterbreite}x{fensterhöhe}")
 
+    # Label-Stil definieren
+    label_style = ttk.Style()
+    label_style.configure("Label.TLabel", foreground="black", font=("Arial", 12), padding=10)
+
+    # Eingabefeld-Stil definieren
+    entry_style = ttk.Style()
+    entry_style.configure("Entry.TEntry", foreground="black", font=("Arial", 12), padding=10)
+
+    # Button-Stil definieren
+    button_style = ttk.Style()
+    button_style.configure("Button.TButton", foreground="black", font=("Arial", 12), padding=10)
+
     # Komponenten hinzufügen
-    label1 = tk.Label(fenster, text="Sicherheitsstufe (1, 2 oder 3):")
+    label1 = ttk.Label(fenster, text="Sicherheitsstufe (1, 2 oder 3):", style="Label.TLabel")
     label1.pack(pady=10)
-    eingabefeld_1 = tk.Entry(fenster)
+    eingabefeld_1 = ttk.Entry(fenster, style="Entry.TEntry")
     eingabefeld_1.pack()
 
-    label2 = tk.Label(fenster, text="Anzahl der Passwörter:")
+    label2 = ttk.Label(fenster, text="Anzahl der Passwörter:", style="Label.TLabel")
     label2.pack(pady=10)
-    eingabefeld_2 = tk.Entry(fenster)
+    eingabefeld_2 = ttk.Entry(fenster, style="Entry.TEntry")
     eingabefeld_2.pack()
+
     # Button erstellen
-    start = tk.Button(fenster, text="Passwortgenerator Starten", command=sicherheitslevel)
+    start = ttk.Button(fenster, text="Passwortgenerator Starten", command=sicherheitslevel, style="Button.TButton")
     start.pack()
 
     # Fensterloop
